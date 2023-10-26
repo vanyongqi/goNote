@@ -1,6 +1,7 @@
-# golang note 
+# golang note
 
-## 1.Mysql
-## 2.Redis
-## 3.OS
-## 4.Golang
+## 1.Golang
+## 2.MySQL
+## 3.Redis
+## 4.ElasticSearch
+## 5.GitSkill
