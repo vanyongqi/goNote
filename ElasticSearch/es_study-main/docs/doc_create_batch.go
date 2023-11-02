@@ -5,8 +5,9 @@ import (
 	"es_study/global"
 	"es_study/models"
 	"fmt"
-	"github.com/olivere/elastic/v7"
 	"time"
+
+	"github.com/olivere/elastic"
 )
 
 func DocCreateBatch() {

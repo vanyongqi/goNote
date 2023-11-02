@@ -3,7 +3,8 @@ package core
 import (
 	"es_study/global"
 	"fmt"
-	"github.com/olivere/elastic/v7"
+
+	"github.com/olivere/elastic"
 )
 
 func EsConnect() {
@@ -19,3 +20,5 @@ func EsConnect() {
 	}
 	global.ESClient = client
 }
+
+2
