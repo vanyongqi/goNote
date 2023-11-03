@@ -7,4 +7,6 @@
 ## 5.GitSkill
 
 
-hhh this is a mian commit
+hhh this is a main commit
+
+this is main commit 2
