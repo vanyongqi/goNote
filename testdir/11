@@ -1,0 +1,68 @@
+	if strings.IndexByte(ip, ',') > 0 {
+		split := strings.Split(ip, ",")
+		if len(split) < 2 {
+			return
+		}
+		for _, value := range split {
+			queries = append(queries, ConvertIpContent(value)...)
+		}
+	} else if strings.Contains(ip, "\r\n") {
+		split := strings.Split(ip, "\r\n")
+		if len(split) < 2 {
+			return
+		}
+		for _, value := range split {
+			queries = append(queries, ConvertIpContent(value)...)
+		}
+	} else if strings.Contains(ip, "\n") {
+		split := strings.Split(ip, "\n")
+		if len(split) < 2 {
+			return
+		}
+		for _, value := range split {
+			queries = append(queries, ConvertIpContent(value)...)
+		}
+	} else if strings.IndexByte(ip, '-') > 0 {
+		if strings.IndexByte(ip, '*') > 0 { //存在- 并且存在*
+			//ip = "10.10.1-11.*"
+			split := strings.Split(ip, ".")     //10 10 1-11 *
+			tem := strings.Split(split[2], "-") //1 11
+			var ipStart, ipEnd string
+			ipStart = split[0] + "." + split[1] + "." + tem[0] + "." + strconv.Itoa(0)
+			ipEnd = split[0] + "." + split[1] + "." + tem[1] + "." + strconv.Itoa(255)
+			cidrRange, err := cidrx.IPv4RangeToCIDRRange(ipStart, ipEnd)
+			if err != nil {
+				return nil
+			}
+			for _, v := range cidrRange {
+				queries = append(queries, elastic.NewTermQuery("ip", v))
+			}
+		} else { // 存在 - 但不存在*
+
+			split := strings.Split(ip, "-") //split[0] = 10.10.10.10 split[1] = 20
+			if len(split) != 2 {
+				return
+			}
+
+			i := strings.Split(split[0], ".") //i= [10 ,10,10,10]
+			tem2 := strings.Split(split[1], ".")
+			var ipStart, ipEnd string
+			if len(tem2) == 4 {
+				ipStart = split[0]
+				ipEnd = split[1]
+			} else {
+				i[len(i)-1] = split[1] //i=[10,10,10,20]
+				ipStart = split[0]
+				ipEnd = strings.Join(i, ".")
+			}
+			cidrRange, err := cidrx.IPv4RangeToCIDRRange(ipStart, ipEnd)
+			if err != nil {
+				return nil
+			}
+			for _, v := range cidrRange {
+				queries = append(queries, elastic.NewTermQuery("ip", v))
+			}
+		}
+	} else {
+		queries = append(queries, elastic.NewTermQuery("ip", ip))
+	}

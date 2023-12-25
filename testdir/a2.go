@@ -7,15 +7,11 @@ import (
 	"strings"
 )
 
-func maijn() {
-	//tem2 := strings.Split("10.10.10.11", ".")
-	//fmt.Println(ipContent1("10.10.10.")
-	//IpContent1("10.10.14-16.*\n10.10.11.20-100\n10.10.10.10/24\n10.10.10.10\n11.11.11.11")
-	IpContent1("10.10.10.91,10.10.10.58")
-
+func main2() {
+	IpContent("10.10.14-16.*\n10.10.11.20-100\n10.10.10.10/24\n10.10.10.10\n11.11.11.11")
 }
 
-func IpContent1(ip string) (queries string) {
+func IpContent(ip string) (queries string) {
 	//step1: 将一串ip解析成单个ip，
 	//10.10.14-16.*\n10.10.11.20-100\n10.10.10.10/24\n10.10.10.10
 	//==> [10.10.14-16.* , 10.10.11.20-100 , 10.10.10.10/24，10.10.10.10]
@@ -60,7 +56,7 @@ func IpContent1(ip string) (queries string) {
 			i[len(i)-1] = split[1]            //i=[10,10,10,20]
 			ipStart := split[0]
 			ipEnd := strings.Join(i, ".")
-			ipBlocksPart, _ := IPv4RangeToCIDRRange1(ipStart, ipEnd)
+			ipBlocksPart, _ := IPv4RangeToCIDRRange(ipStart, ipEnd)
 			ipBlocks = append(ipBlocks, ipBlocksPart...)
 
 		case strings.IndexByte(ipBlock[i], '-') > 0 && strings.IndexByte(ipBlock[i], '*') > 0: //10.10.14-16.*     //CIDR
@@ -70,7 +66,7 @@ func IpContent1(ip string) (queries string) {
 			ipStart := split[0] + "." + split[1] + "." + tem[0] + "." + strconv.Itoa(0)
 			//fmt.Print("222", ipStart, "3333\n")
 			ipEnd := split[0] + "." + split[1] + "." + tem[1] + "." + strconv.Itoa(255)
-			ipBlocksPart, _ := IPv4RangeToCIDRRange1(ipStart, ipEnd) //10.10.14.0, 10.10.16.255
+			ipBlocksPart, _ := IPv4RangeToCIDRRange(ipStart, ipEnd) //10.10.14.0, 10.10.16.255
 			ipBlocks = append(ipBlocks, ipBlocksPart...)
 		case strings.IndexByte(ipBlock[i], '/') > 0: // 10.10.10.10/24    //CIDR
 			split := strings.Split(ipBlock[i], "/")
@@ -78,13 +74,12 @@ func IpContent1(ip string) (queries string) {
 			i[len(i)-1] = strconv.Itoa(255)   //i=[10,10,10,255]
 			ipStart := split[0]
 			ipEnd := strings.Join(i, ".")
-			ipBlocksPart, _ := IPv4RangeToCIDRRange1(ipStart, ipEnd)
+			ipBlocksPart, _ := IPv4RangeToCIDRRange(ipStart, ipEnd)
 			ipBlocks = append(ipBlocks, ipBlocksPart...)
 
-		case ipBlocks[i] == "11.11.11.11":
-			//default:
+		default:
 			fmt.Print("----------")
-			ipBlocksPart, _ := IPv4RangeToCIDRRange1("11.11.11.10", ipBlocks[i])
+			ipBlocksPart, _ := IPv4RangeToCIDRRange("11.11.11.10", ipBlocks[i])
 			ipBlocks = append(ipBlocks, ipBlocksPart...)
 		}
 		for i := 0; i < len(ipBlocks); i++ {
@@ -96,7 +91,7 @@ func IpContent1(ip string) (queries string) {
 }
 
 // IPv4RangeToCIDRRange Convert IPv4 range into CIDR
-func IPv4RangeToCIDRRange1(ipStart string, ipEnd string) (cidrs []string, err error) {
+func IPv4RangeToCIDRRange(ipStart string, ipEnd string) (cidrs []string, err error) {
 	cidr2mask := []uint32{
 		0x00000000, 0x80000000, 0xC0000000,
 		0xE0000000, 0xF0000000, 0xF8000000,
@@ -111,8 +106,8 @@ func IPv4RangeToCIDRRange1(ipStart string, ipEnd string) (cidrs []string, err er
 		0xFFFFFFFC, 0xFFFFFFFE, 0xFFFFFFFF,
 	}
 
-	ipStartUint32 := iPv4ToUint321(ipStart)
-	ipEndUint32 := iPv4ToUint321(ipEnd)
+	ipStartUint32 := iPv4ToUint32(ipStart)
+	ipEndUint32 := iPv4ToUint32(ipEnd)
 
 	if ipStartUint32 > ipEndUint32 {
 		return nil, fmt.Errorf("start IP:%s must be less than end IP:%s", ipStart, ipEnd)
@@ -137,7 +132,7 @@ func IPv4RangeToCIDRRange1(ipStart string, ipEnd string) (cidrs []string, err er
 			maxSize = maxDiff
 		}
 
-		cidrs = append(cidrs, uInt32ToIPv41(ipStartUint32)+"/"+strconv.Itoa(maxSize))
+		cidrs = append(cidrs, uInt32ToIPv4(ipStartUint32)+"/"+strconv.Itoa(maxSize))
 
 		ipStartUint32 += uint32(math.Exp2(float64(32 - maxSize)))
 	}
@@ -146,7 +141,7 @@ func IPv4RangeToCIDRRange1(ipStart string, ipEnd string) (cidrs []string, err er
 }
 
 // iPv4ToUint32 Convert IPv4 to uint32
-func iPv4ToUint321(iPv4 string) uint32 {
+func iPv4ToUint32(iPv4 string) uint32 {
 
 	ipOctets := [4]uint64{}
 
@@ -160,7 +155,7 @@ func iPv4ToUint321(iPv4 string) uint32 {
 }
 
 // uInt32ToIPv4 Convert uint32 to IP
-func uInt32ToIPv41(iPuInt32 uint32) (iP string) {
+func uInt32ToIPv4(iPuInt32 uint32) (iP string) {
 	iP = fmt.Sprintf("%d.%d.%d.%d",
 		iPuInt32>>24,
 		(iPuInt32&0x00FFFFFF)>>16,
