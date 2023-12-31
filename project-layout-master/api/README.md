@@ -6,3 +6,5 @@ Examples:
 
 * https://github.com/kubernetes/kubernetes/tree/master/api
 * https://github.com/moby/moby/tree/master/api
+
+存放swagger.json文件

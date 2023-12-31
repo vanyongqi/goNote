@@ -9,3 +9,5 @@ Put your CI (travis, circle, drone) configurations and scripts in the `/build/ci
 Examples:
 
 * https://github.com/cockroachdb/cockroach/tree/master/build
+
+存放ci配置文件

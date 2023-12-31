@@ -1,5 +1,8 @@
 # `/cmd`
 
+存放不同的程序代码，每个程序代码应该放在一个单独的目录中。
+main函数的，不要放太多代码。
+
 Main applications for this project.
 
 The directory name for each application should match the name of the executable you want to have (e.g., `/cmd/myapp`).
